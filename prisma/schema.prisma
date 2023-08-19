@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id             String        @id @default(cuid())
+  name           String?
+  email          String        @unique
+  emailVerified  DateTime?
+  hashedPassword String?
+  role           RoleEnumType? @default(user)
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  Girisler       Giris[]
+  Cikislar       Cikis[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Dorse {
+  id       Int     @id @default(autoincrement())
+  plaka    String
+  firma    String?
+  girisler Giris[]
+  cikislar Cikis[]
+}
+
+model Giris {
+  id      Int     @id @default(autoincrement())
+  getiren String
+  dorse   Dorse   @relation(fields: [dorseId], references: [id])
+  dorseId Int
+  yuk     String
+  tarih   Int
+  yapan   User    @relation(fields: [yapanId], references: [id])
+  yapanId String  @unique
+  gumruk  Gumruk?
+}
+
+model Cikis {
+  id      Int    @id @default(autoincrement())
+  goturen String
+  dorse   Dorse  @relation(fields: [dorseId], references: [id])
+  dorseId Int
+  tarih   Int
+  yapan   User   @relation(fields: [yapanId], references: [id])
+  yapanId String
+}
+
+model Gumruk {
+  id      Int    @id @default(autoincrement())
+  kayit   String
+  giris   Giris? @relation(fields: [girisId], references: [id])
+  girisId Int    @unique
+}
+
+enum RoleEnumType {
+  user
+  admin
+  personel
+  memur
+}
