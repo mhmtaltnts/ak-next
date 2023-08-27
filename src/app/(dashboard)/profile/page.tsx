@@ -19,7 +19,7 @@ const Profile = () => {
           height={36}
         />
         <span>{session.data?.user.role}</span>
-        <span>Selam</span>
+        <span>Selam Kelam Bu negüxzel Kleam</span>
       </div>
     </div>
   );

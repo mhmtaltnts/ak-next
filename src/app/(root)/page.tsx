@@ -14,7 +14,7 @@ const HomePage = async () => {
         <RegisterButton />
         <LogoutButton />
         <ProfileButton /> */}
-        selam
+        selam Kelam Neredesin
       </div>
     </section>
   );
